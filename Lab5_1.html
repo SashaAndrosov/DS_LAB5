@@ -1,0 +1,277 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script src="script.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="styles.css"> -->
+  </head>
+  <body>
+    <input type="file" onChange="readFiles(event)"/>
+
+<canvas id="canvas" width="320" height="320"></canvas>
+<input type="button" value=" Выполнить отсечение отрезков алгоритмом м Лианга-Барски" onclick="Onclick()"></p>
+    <script>
+     
+           let line1;
+           let line2;
+           let line3;
+           let rectangle;
+
+           let x1_1;
+           let y1_1;
+           let x2_1;
+           let y2_1;
+
+           let x1_2;
+           let y1_2;
+           let x2_2;
+           let y2_2;
+
+           let x1_3;
+           let y1_3;
+           let x2_3;
+           let y2_3;
+
+           let X1;
+           let Y1;
+           let X2;
+           let Y2;
+
+
+
+function readFiles(e)
+{
+    // если есть нужные объекты - то чтение файлов возможно
+    if (window.FileList && window.File) {
+
+        const file = e.target.files[0];
+
+        const name = file.name ? file.name : 'NOT SUPPORTED';
+        const type = file.type ? file.type : 'NOT SUPPORTED';
+        const size = file.size ? file.size : 'NOT SUPPORTED';
+       
+        let r =  { name, type, size };
+
+       console.log(r)
+
+       
+        // объект класса читающего файл
+        const reader = new FileReader();
+
+        // обработчик, который срабатывает при загрузке файла
+        reader.addEventListener('load', event => {
+           
+            // содержимое файла
+            let content = event.target.result;
+           
+
+           let rows = content.split('\r\n');
+            line1=rows[0].split(' ');
+           line2=rows[1].split(' ');
+            line3=rows[2].split(' ');
+            rectangle=rows[3].split(' ');
+
+            x1_1=parseInt(line1[0]);
+            y1_1=parseInt(line1[1]);
+            x2_1=parseInt(line1[2]);
+            y2_1=parseInt(line1[3]);
+
+            x1_2=parseInt(line2[0]);
+            y1_2=parseInt(line2[1]);
+            x2_2=parseInt(line2[2]);
+            y2_2=parseInt(line2[3]);
+
+            x1_3=parseInt(line3[0]);
+            y1_3=parseInt(line3[1]);
+            x2_3=parseInt(line3[2]);
+            y2_3=parseInt(line3[3]);
+
+            X1=parseInt(rectangle[0]);
+            Y1=parseInt(rectangle[1]);
+            X2=parseInt(rectangle[2]);
+            Y2=parseInt(rectangle[3]);
+
+           ctx = CreateCanvas();
+           ctx.beginPath();
+           ctx.fillStyle = 'rgba(255,10,38,0.5)';
+           ctx.fillRect(X1*30, 300-Y2*30, (X2-X1)*30, (Y2-Y1)*30);
+           ctx.beginPath();
+          ctx.strokeStyle = "black";
+          ctx.lineWidth = 5; //толщина 5px
+          ctx.moveTo(x1_1*30, 300-y1_1*30);
+          ctx.lineTo(x2_1*30, 300-y2_1*30);
+
+          ctx.moveTo(x1_2*30, 300-y1_2*30);
+          ctx.lineTo(x2_2*30, 300-y2_2*30);
+
+
+          ctx.moveTo(x1_3*30, 300-y1_3*30);
+          ctx.lineTo(x2_3*30, 300-y2_3*30);
+
+
+          ctx.stroke();
+
+            // выводим содержимое в консоль построчно         
+        });
+        // читаем текстовый файл
+        reader.readAsText(file);
+    }
+}
+
+
+
+
+
+      function CreateCanvas() {
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 2;
+        ctx.moveTo(0, 0);
+        let k1 = 30;
+        for (let i = 1; i <= 10; i++) {
+         ctx.fillStyle = "black";
+          ctx.lineTo(k1 - 30, 300);
+          ctx.moveTo(k1, 0);
+          ctx.fillText(i, k1 - 2, 310);
+          k1 = k1 + 30;
+        }
+      
+
+        let k = 30;
+
+        for (let i = 1; i <= 10; i++) {
+           ctx.fillStyle = "black";
+          ctx.lineTo(300, k - 30);
+          ctx.moveTo(0, k);
+          ctx.fillText(10 - i, 2, k - 2);
+          k = k + 30;
+        }
+        ctx.moveTo(0, 0);
+        ctx.lineTo(300, 0); // линия вправо
+        ctx.lineTo(300, 300); // линия вниз
+        ctx.lineTo(0, 300); // линия влево
+        ctx.lineTo(0, 0);
+        ctx.stroke();
+        return ctx;
+      }
+
+
+function Onclick()
+      {
+        LiangBarski(x1_1,y1_1,x2_1,y2_1);
+        LiangBarski(x1_2,y1_2,x2_2,y2_2);
+        LiangBarski(x1_3,y1_3,x2_3,y2_3);
+      }
+
+      function LiangBarski(x1,y1,x2,y2)
+      {
+     var canvas = document.getElementById("canvas");
+      var Ctx = canvas.getContext("2d");
+      let p1 = -(x2 - x1);
+      let p2 = -p1;
+      let p3 = -(y2 - y1);
+      let p4 = -p3;
+    
+      let q1 = x1 - X1;
+      let q2 = X2 - x1;
+      let q3 = y1 - Y1;
+      let q4 = Y2 - y1;
+      let posarr = Array(6).fill(0);
+      let negarr = Array(6).fill(0);
+      let posind = 1;
+      let negind = 1;
+      posarr[0] = 1;
+      negarr[0] = 0;
+
+
+      if ((p1 == 0 && q1 < 0) || (p3 == 0 && q3 < 0)) {
+        console.log( "Line is parallel to clipping window!");
+        return;
+    }
+    if (p1 != 0) {
+        let r1 = q1 / p1;
+        let r2 = q2 / p2;
+        if (p1 < 0) {
+            negarr[negind++] = r1; // При отрицательном p1, добавляем r1 к отрицательному массиву
+            posarr[posind++] = r2; // и добавляем r2 к положительному массиву
+        } else {
+            negarr[negind++] = r2;
+            posarr[posind++] = r1;
+        }
+    }
+    if (p3 != 0) {
+        let r3 = q3 / p3;
+        let r4 = q4 / p4;
+        if (p3 < 0) {
+            negarr[negind++] = r3;
+            posarr[posind++] = r4;
+        } else {
+            negarr[negind++] = r4;
+            posarr[posind++] = r3;
+        }
+    }
+
+    let xn1;
+    let yn1;
+    let xn2;
+    let yn2;
+    let rn1;
+    let rn2;
+    rn1 = maxi(negarr, negind); // Максимум отрицательного массива
+    rn2 = mini(posarr, posind); // Минимум положительного массива
+
+    if (rn1 > rn2) { // Отклоняем
+          console.log("Line is outside the clipping window!");
+        return;
+    }
+
+    xn1 = x1 + p2 * rn1;
+    yn1 = y1 + p4 * rn1; // Вычисляем новые точки
+
+    xn2 = x1 + p2 * rn2;
+    yn2 = y1 + p4 * rn2;
+
+    Ctx.beginPath();
+    Ctx.strokeStyle = "green";
+    Ctx.lineWidth = 5; //толщина 5px
+    Ctx.moveTo(xn1*30, 300-yn1*30);
+    Ctx.lineTo(xn2*30, 300-yn2*30);
+    Ctx.stroke();
+
+  }
+    function maxi(arr, n) 
+    {
+    let m = 0;
+    for (let i = 0; i < n; ++i)
+        if (m < arr[i])
+            m = arr[i];
+    return m;
+}
+      
+function mini(arr, n)
+ {
+    let m = 1;
+    for (let i = 0; i < n; ++i)
+        if (m > arr[i])
+            m = arr[i];
+    return m;
+}
+
+
+
+
+
+
+    </script>
+
+
+
+  
+
+
+
+
+  </body>
+</html>
